@@ -3,6 +3,9 @@
 module Controller(input HMbar, start, clk, output reg [14:0]address, output reg read, write, Ready);
     parameter [1:0] Start = 2'b00, ReadCache = 2'b01, CheckAddress = 2'b10, WriteCache = 2'b11;
     
+    reg [14:0]Address;                         // Make decision what to set for this address
+    
+
     reg [1:0]ps, ns;
     always @(HMbar, start, ps)begin
         address = 15'b000000000000000;
@@ -10,6 +13,7 @@ module Controller(input HMbar, start, clk, output reg [14:0]address, output reg 
         write = 1'b0;
         Ready = 1'b1;
         ns = Start;
+        
         case (ps)
             Start : begin
                 Ready = 1'b1;                   //check whether it is correct even at the first time for reading the first data
@@ -21,6 +25,8 @@ module Controller(input HMbar, start, clk, output reg [14:0]address, output reg 
             end 
             CheckAddress : begin
                 ns = Start;
+                Address = Address + 15'b000000000000100;
+                
             end
             WriteCache : begin
                 write = 1'b1;
